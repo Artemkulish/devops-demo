@@ -2,11 +2,12 @@ name: Terraform Plan
 
 on:
   pull_request:
+    branches:
+      - main
     types:
       - opened
       - synchronize
-    branches:
-      - main
+      - reopened
     paths:
       - "terraform/**.tf"
 
