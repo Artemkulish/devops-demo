@@ -2,13 +2,20 @@ name: Terraform Plan
 
 on:
   pull_request:
+    branches:
+      - main
     types:
       - opened
       - synchronize
-    branches:
-      - main
-    paths:
-      - "terraform/**.tf"
+      - reopened
+    # paths:
+    #   - "terraform/**.tf"
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_WORKDIR: "terraform/002"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   tfcheck:
@@ -25,7 +32,7 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform -recursive -check
+        run: terraform fmt -recursive -check
         continue-on-error: true
 
       - name: Terraform init
