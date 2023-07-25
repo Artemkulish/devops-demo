@@ -32,7 +32,7 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform -recursive -check
+        run: terraform fmt -recursive -check
         continue-on-error: true
 
       - name: Terraform init
