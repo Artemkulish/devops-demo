@@ -6,8 +6,6 @@ on:
       - main
     types:
       - closed
-    paths:
-      - aws/**
 
 env:
   TERRAFORM_VERSION: 1.3.9
