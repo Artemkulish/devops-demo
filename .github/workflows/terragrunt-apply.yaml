@@ -24,6 +24,7 @@ jobs:
       - name: Set env
         run: |
           echo ${{ github.ref_name }}
+          echo test
           echo ${{ github.ref_type }}
           if [[ ${{ github.ref_name }} == "main" ]];
           then
