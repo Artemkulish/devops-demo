@@ -1,0 +1,53 @@
+name: Terragrunt apply
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+    paths:
+      - aws/**
+
+env:
+  TERRAFORM_VERSION: 1.3.9
+  TERRAGRUNT_VERSION: 0.48.4
+  AWS_REGION: "us-east-2"
+  TF_IN_AUTOMATION: "yes"
+  TF_CLI_ARGS: "-no-color"
+
+jobs:
+  get-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set env
+        run: |
+          echo ${{ github.ref_name }}
+          echo ${{ github.ref_type }}
+          if [[ ${{ github.ref_name }} == "main" ]];
+          then
+            echo TERRAGRUNT_ENV_FILTER="*/!prod/*.hcl" >> $GITHUB_ENV
+          fi
+      - name: Get changed files
+        id: changed_files
+        uses: tj-actions/changed-files@v37
+        with:
+          dir_names: "true"
+          json: true
+          files: |
+            ${{ env.TERRAGRUNT_ENV_FILTER }}
+          files_ignore: |
+            aws/terragrunt.hcl
+      - id: set-matrix
+        run: |
+          echo ${{ steps.changed_files.outputs.all_changed_and_modified_files }}
+
+          if [ ${{ steps.changed_files.outputs.all_changed_and_modified_files }} == '[]' ];
+          then
+            echo "matrix=null" >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix={\"module\":${{ steps.changed_files.outputs.all_changed_and_modified_files }}}" >> "$GITHUB_OUTPUT"
+          fi
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
